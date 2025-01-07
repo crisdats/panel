@@ -1,18 +1,15 @@
 FROM ghcr.io/lescai-teaching/rstudio-docker-amd64:latest
 
 # Set environment variables
-ENV PASSWORD 'rstudio'
-ENV PATH ${PATH}:/opt/software/bin
-ENV PORT 8787
-ENV DISABLE_AUTH true
+ENV PASSWORD='rstudio'
+ENV PATH=${PATH}:/opt/software/bin
+ENV PORT=8787
+ENV DISABLE_AUTH=true
 
 # Set working directory
 WORKDIR /home/rstudio
 
-# Switch to root user
-USER root
-
-# Install necessary packages and latest version of Node.js
+# Install necessary packages and the latest version of Node.js
 RUN apt update -y && \
     apt upgrade -y && \
     apt install -y sudo git ffmpeg wget mc imagemagick curl && \
@@ -23,12 +20,16 @@ RUN apt update -y && \
 # Add sudo privileges to the RStudio user
 RUN echo "rstudio ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Fix file permissions so rstudio can modify files (also for root)
+# Set correct file permissions
 RUN chmod -R 777 /home/rstudio && \
     chown -R rstudio:rstudio /home/rstudio
 
-# Expose the necessary ports
+# Expose the necessary port
 EXPOSE 8787
 
-# Set entrypoint or CMD as needed
-CMD ["/usr/lib/rstudio-server/bin/rserver", "--server-daemonize", "false"]
+# Copy entrypoint script (defined below)
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Set entrypoint
+CMD ["sh", "/usr/local/bin/entrypoint.sh"]
