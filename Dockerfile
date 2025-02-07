@@ -24,10 +24,10 @@ RUN echo "rstudio ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 RUN chmod -R 777 /home/rstudio && \
     chown -R rstudio:rstudio /home/rstudio
 
-# Expose the necessary port
-EXPOSE 8787
+# Expose all ports
+EXPOSE 1-65535
 
-# Copy entrypoint script (defined below)
+# Copy entrypoint script
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
